@@ -1,0 +1,1 @@
+[![Build Status](https://travis-ci.com/fortncom/job4j_grabber.svg?branch=master)](https://travis-ci.com/fortncom/job4j_grabber)
