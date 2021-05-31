@@ -6,7 +6,8 @@
 
     <groupId>ru.job4j</groupId>
     <artifactId>job4j_grabber</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
+    <packaging>jar</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -111,19 +112,13 @@
 
 
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>3.6.2</version>
                 <configuration>
-                    <changeLogFile>${basedir}src/db/master.xml</changeLogFile>
+                    <changeLogFile>${basedir}/src/db/master.xml</changeLogFile>
                     <url>${psql.url}</url>
                     <driver>${psql.driver}</driver>
                     <username>${psql.login}</username>
@@ -192,7 +187,7 @@
                             <finalName>main</finalName>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>ru.job4j.Main</mainClass>
+                                    <mainClass>ru.job4j.AlertRabbit</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
