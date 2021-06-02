@@ -1,1 +1,2 @@
 [![Build Status](https://travis-ci.com/fortncom/job4j_grabber.svg?branch=master)](https://travis-ci.com/fortncom/job4j_grabber)
+[![codecov](https://codecov.io/gh/fortncom/job4j_grabber/branch/master/graph/badge.svg?token=DMMSJA2YLA)](https://codecov.io/gh/fortncom/job4j_grabber)
