@@ -17,11 +17,18 @@ public class SqlRuDateTimeParser implements DateTimeParser {
         if (fullDate.length < 2) {
             return null;
         }
-        String onlyDate = switch (fullDate[0].trim().toLowerCase()) {
-            case "сегодня" ->  LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yy"));
-            case "вчера" ->  LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("dd MMMM yy"));
-            default -> fullDate[0].trim();
-        };
+        String onlyDate;
+            switch (fullDate[0].trim().toLowerCase()) {
+                case "сегодня" : onlyDate = LocalDate.now().format(
+                        DateTimeFormatter.ofPattern("dd MMMM yy"));
+                break;
+                case "вчера" : onlyDate = LocalDate.now().minusDays(1).format(
+                        DateTimeFormatter.ofPattern("dd MMMM yy"));
+                break;
+                default : onlyDate = fullDate[0].trim();
+                break;
+        }
+
         try {
             Date date = getFormatter().parse(onlyDate.concat(fullDate[1]));
             return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();

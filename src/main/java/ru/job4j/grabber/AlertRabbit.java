@@ -38,30 +38,6 @@ public class AlertRabbit implements AutoCloseable {
 
     }
 
-    public static void main(String[] args) {
-        AlertRabbit rabbit = new AlertRabbit();
-        rabbit.init();
-        try (Connection cn = rabbit.cn) {
-            Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
-            scheduler.start();
-            JobDataMap data = new JobDataMap();
-            data.put("cn", cn);
-            JobDetail job = newJob(Rabbit.class).usingJobData(data).build();
-            SimpleScheduleBuilder times = simpleSchedule()
-                    .withIntervalInSeconds(Integer.parseInt(rabbit.config.getProperty("rabbit.interval")))
-                    .repeatForever();
-            Trigger trigger = newTrigger()
-                    .startNow()
-                    .withSchedule(times)
-                    .build();
-            scheduler.scheduleJob(job, trigger);
-            Thread.sleep(10000);
-            scheduler.shutdown();
-        } catch (SchedulerException | InterruptedException | SQLException se) {
-            se.printStackTrace();
-        }
-    }
-
     @Override
     public void close() throws Exception {
         if (cn != null) {
@@ -89,6 +65,30 @@ public class AlertRabbit implements AutoCloseable {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public static void main(String[] args) {
+        AlertRabbit rabbit = new AlertRabbit();
+        rabbit.init();
+        try (Connection cn = rabbit.cn) {
+            Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+            scheduler.start();
+            JobDataMap data = new JobDataMap();
+            data.put("cn", cn);
+            JobDetail job = newJob(Rabbit.class).usingJobData(data).build();
+            SimpleScheduleBuilder times = simpleSchedule()
+                    .withIntervalInSeconds(Integer.parseInt(rabbit.config.getProperty("rabbit.interval")))
+                    .repeatForever();
+            Trigger trigger = newTrigger()
+                    .startNow()
+                    .withSchedule(times)
+                    .build();
+            scheduler.scheduleJob(job, trigger);
+            Thread.sleep(10000);
+            scheduler.shutdown();
+        } catch (SchedulerException | InterruptedException | SQLException se) {
+            se.printStackTrace();
         }
     }
 }
