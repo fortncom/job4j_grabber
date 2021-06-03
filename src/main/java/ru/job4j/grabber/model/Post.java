@@ -1,20 +1,19 @@
 package ru.job4j.grabber.model;
 
-import java.nio.file.Path;
 import java.sql.Timestamp;
 
 public class Post {
 
     private int id;
     private String name;
-    private Path path;
+    private String path;
     private String text;
     private Timestamp created;
 
     public Post() {
     }
 
-    public Post(int id, String name, Path path) {
+    public Post(int id, String name, String path) {
         this.id = id;
         this.name = name;
         this.path = path;
@@ -36,11 +35,11 @@ public class Post {
         this.name = name;
     }
 
-    public Path getPath() {
+    public String getPath() {
         return path;
     }
 
-    public void setPath(Path path) {
+    public void setPath(String path) {
         this.path = path;
     }
 

@@ -35,7 +35,6 @@ public class SqlRuDateTimeParser implements DateTimeParser {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
         throw new IllegalStateException();
     }
 
