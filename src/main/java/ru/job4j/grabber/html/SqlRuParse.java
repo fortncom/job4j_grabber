@@ -12,59 +12,67 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SqlRuParse {
+public class SqlRuParse implements Parse {
 
-    List<Post> posts = new ArrayList<>();
 
-    public void parse() {
-        for (int i = 1; i < 5; i++) {
-            System.out.println("Страница №" + i);
-            try {
-                Document doc = Jsoup.connect(String.format(
-                        "https://www.sql.ru/forum/job-offers/%s", i)).get();
-                Elements rows = doc.select(".forumTable > tbody > tr");
-
-                for (Element tr : rows) {
-                    Post post = new Post();
-                    Element td = tr.children().get(1);
-                    String href = td.getElementsByTag("a").attr("href");
-                    if (href != null) {
-                        post.setPath(href);
-                        posts.add(post);
-                    }
+    @Override
+    public List<Post> list(String link) {
+        List<Post> posts = new ArrayList<>();
+        try {
+            Document doc = Jsoup.connect(link).get();
+            Elements rows = doc.select(".forumTable > tbody > tr");
+            for (Element tr : rows) {
+                Post post = new Post();
+                Element td = tr.children().get(1);
+                String href = td.getElementsByTag("a").attr("href");
+                if (href != null) {
+                    post.setPath(href);
+                    posts.add(post);
                 }
-                loadPosts();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+            return posts;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        throw new IllegalStateException();
     }
 
-    private void loadPosts() throws IOException {
-        SqlRuDateTimeParser parser = new SqlRuDateTimeParser();
-        for (Post p : posts) {
-            if (!p.getPath().equals("")) {
-                Document pst = Jsoup.connect(p.getPath()).get();
+    @Override
+    public Post detail(String link) {
+        Post post = new Post();
+        try {
+            if (!link.equals("")) {
+                Document pst = Jsoup.connect(link).get();
                 Elements dataPost = pst.select(".msgTable > tbody");
                 Element name = dataPost.first().child(0).child(0);
                 if (name != null) {
-                    p.setName(name.text());
+                    post.setName(name.text());
                 }
                 Element text = dataPost.first().child(1).child(1);
                 if (text != null) {
-                    p.setText(text.text());
+                    post.setText(text.text());
                 }
                 Element date = dataPost.first().child(2).child(0);
                 if (date != null) {
-                    p.setCreated(Timestamp.valueOf(parser.parse(date.text())));
+                    post.setCreated(Timestamp.valueOf(new SqlRuDateTimeParser().parse(date.text())));
                 }
             }
-            System.out.println(p);
+            return post;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        throw new IllegalStateException();
     }
 
     public static void main(String[] args) {
         SqlRuParse ruParse = new SqlRuParse();
-        ruParse.parse();
+        List<Post> posts = ruParse.list("https://www.sql.ru/forum/job-offers/1");
+        for (int i = 0; i < posts.size(); i++) {
+            posts.set(i, ruParse.detail(posts.get(i).getPath()));
+            System.out.println(posts.get(i));
+        }
+
     }
+
 }
