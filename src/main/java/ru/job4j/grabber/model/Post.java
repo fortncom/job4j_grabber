@@ -6,17 +6,17 @@ public class Post {
 
     private int id;
     private String name;
-    private String path;
+    private String link;
     private String text;
     private Timestamp created;
 
     public Post() {
     }
 
-    public Post(int id, String name, String path) {
+    public Post(int id, String name, String link) {
         this.id = id;
         this.name = name;
-        this.path = path;
+        this.link = link;
     }
 
     public int getId() {
@@ -35,12 +35,12 @@ public class Post {
         this.name = name;
     }
 
-    public String getPath() {
-        return path;
+    public String getLink() {
+        return link;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setLink(String link) {
+        this.link = link;
     }
 
     public String getText() {
@@ -64,7 +64,7 @@ public class Post {
         return "Post{"
                 + "id=" + id
                 + ", name='" + name + '\''
-                + ", path=" + path
+                + ", link=" + link
                 + ", text='" + text + '\''
                 + ", created=" + created
                 + '}';

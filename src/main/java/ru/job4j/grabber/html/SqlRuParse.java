@@ -26,7 +26,7 @@ public class SqlRuParse implements Parse {
                 Element td = tr.children().get(1);
                 String href = td.getElementsByTag("a").attr("href");
                 if (href != null) {
-                    post.setPath(href);
+                    post.setLink(href);
                     posts.add(post);
                 }
             }
@@ -69,7 +69,7 @@ public class SqlRuParse implements Parse {
         SqlRuParse ruParse = new SqlRuParse();
         List<Post> posts = ruParse.list("https://www.sql.ru/forum/job-offers/1");
         for (int i = 0; i < posts.size(); i++) {
-            posts.set(i, ruParse.detail(posts.get(i).getPath()));
+            posts.set(i, ruParse.detail(posts.get(i).getLink()));
             System.out.println(posts.get(i));
         }
 
