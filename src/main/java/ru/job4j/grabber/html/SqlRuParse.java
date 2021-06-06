@@ -47,6 +47,7 @@ public class SqlRuParse implements Parse {
                 Element name = dataPost.first().child(0).child(0);
                 if (name != null) {
                     post.setName(name.text());
+                    post.setLink(link);
                 }
                 Element text = dataPost.first().child(1).child(1);
                 if (text != null) {

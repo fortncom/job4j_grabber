@@ -34,8 +34,6 @@ public class AlertRabbit implements AutoCloseable {
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
-
-
     }
 
     @Override
