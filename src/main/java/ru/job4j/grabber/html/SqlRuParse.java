@@ -25,7 +25,7 @@ public class SqlRuParse implements Parse {
                 Post post = new Post();
                 Element td = tr.children().get(1);
                 String href = td.getElementsByTag("a").attr("href");
-                if (href != null) {
+                if (href != null && !href.equals("")) {
                     post.setLink(href);
                     posts.add(post);
                 }
@@ -70,7 +70,6 @@ public class SqlRuParse implements Parse {
             posts.set(i, ruParse.detail(posts.get(i).getLink()));
             System.out.println(posts.get(i));
         }
-
     }
 
 }
