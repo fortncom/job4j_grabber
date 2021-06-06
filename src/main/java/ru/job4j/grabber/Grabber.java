@@ -6,11 +6,12 @@ import ru.job4j.grabber.html.Parse;
 import ru.job4j.grabber.html.SqlRuParse;
 import ru.job4j.grabber.model.Post;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
+import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Properties;
 
@@ -69,12 +70,36 @@ public class Grabber implements Grab {
                 .build();
         scheduler.scheduleJob(job, trigger);
         scheduler.scheduleJob(trigger2);
+        web(store);
         try {
             Thread.sleep(31536000000L);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         scheduler.shutdown();
+    }
+
+    public void web(Store store) {
+        new Thread(() -> {
+            try (ServerSocket server = new ServerSocket(Integer.parseInt(cfg.getProperty("port")))) {
+                while (!server.isClosed()) {
+                    Socket socket = server.accept();
+                    try (OutputStream out = socket.getOutputStream()) {
+                        out.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
+                        for (Post post : store.getAll()) {
+                            out.write(post.toString().getBytes(StandardCharsets.UTF_16));
+                            out.write(System.lineSeparator().getBytes(StandardCharsets.UTF_16));
+                            out.write(System.lineSeparator().getBytes(StandardCharsets.UTF_16));
+                            out.write(System.lineSeparator().getBytes(StandardCharsets.UTF_16));
+                        }
+                    } catch (IOException io) {
+                        io.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     public static class GrabJob implements Job {
@@ -92,7 +117,7 @@ public class Grabber implements Grab {
             for (int i = 0; i < posts.size(); i++) {
                 posts.set(i, parser.detail(posts.get(i).getLink()));
             }
-            try (PsqlStore s = (PsqlStore) store) {
+            try {
                 for (Post post : posts) {
                     if (post.getName().toLowerCase().contains("java")
                             || post.getName().toLowerCase().contains("джава")) {
