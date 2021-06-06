@@ -30,11 +30,10 @@ public class SqlRuParse implements Parse {
                     posts.add(post);
                 }
             }
-            return posts;
         } catch (IOException e) {
             e.printStackTrace();
         }
-        throw new IllegalStateException();
+        return posts;
     }
 
     @Override
@@ -58,12 +57,10 @@ public class SqlRuParse implements Parse {
                     post.setCreated(Timestamp.valueOf(new SqlRuDateTimeParser().parse(date.text())));
                 }
             }
-            return post;
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        throw new IllegalStateException();
+        return post;
     }
 
     public static void main(String[] args) {
