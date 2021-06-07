@@ -42,7 +42,7 @@ public class Grabber implements Grab {
     public Predicate<String> searchCondition() {
         return s -> {
             String str = s.toLowerCase();
-            return str.contains("java") && !str.contains("script") || str.contains("джава");
+            return str.contains("java") && !str.contains("javascript") || str.contains("джава");
         };
     }
 
