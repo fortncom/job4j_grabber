@@ -14,6 +14,7 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Predicate;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
@@ -38,11 +39,19 @@ public class Grabber implements Grab {
         }
     }
 
+    public Predicate<String> searchCondition() {
+        return s -> {
+            String str = s.toLowerCase();
+            return str.contains("java") && !str.contains("script") || str.contains("джава");
+        };
+    }
+
     @Override
-    public void init(Parse parse, Store store, Scheduler scheduler) throws SchedulerException {
+    public void init(Parse parse, Store store, Scheduler scheduler, Predicate<String> filter) throws SchedulerException {
         JobDataMap data = new JobDataMap();
         data.put("store", store);
         data.put("parse", parse);
+        data.put("filter", filter);
         JobDetail job = newJob(GrabJob.class)
                 .usingJobData(data)
                 .withIdentity("nJob", "group1")
@@ -109,18 +118,18 @@ public class Grabber implements Grab {
             JobDataMap map = context.getJobDetail().getJobDataMap();
             Store store = (Store) map.get("store");
             Parse parser = (Parse) map.get("parse");
-            parseSQL(store, parser);
+            Predicate<String> filter = (Predicate<String>) map.get("filter");
+            parseSQL(store, parser, filter);
         }
 
-        private void parseSQL(Store store, Parse parser) {
+        private void parseSQL(Store store, Parse parser, Predicate<String> filter) {
             List<Post> posts = parser.list("https://www.sql.ru/forum/job-offers/1");
             for (int i = 0; i < posts.size(); i++) {
                 posts.set(i, parser.detail(posts.get(i).getLink()));
             }
             try {
                 for (Post post : posts) {
-                    if (post.getName().toLowerCase().contains("java")
-                            || post.getName().toLowerCase().contains("джава")) {
+                    if (filter.test(post.getName())) {
                         store.save(post);
                     }
                 }
@@ -133,12 +142,11 @@ public class Grabber implements Grab {
         }
     }
 
-
     public static void main(String[] args) throws Exception {
         Grabber grab = new Grabber();
         grab.cfg();
         Scheduler scheduler = grab.scheduler();
         Store store = grab.store();
-        grab.init(new SqlRuParse(), store, scheduler);
+        grab.init(new SqlRuParse(), store, scheduler, grab.searchCondition());
     }
 }
